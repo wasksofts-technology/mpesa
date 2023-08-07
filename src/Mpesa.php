@@ -19,31 +19,27 @@ date_default_timezone_set("Africa/Nairobi");
 | *--------------------------------------------------------------------------------------- 
 | *---------------------------------------------------------------------------------------
  */
-
 class Mpesa
 {
-  private  $msg = [];
-  private  $SecurityCredential;
+  private  $msg = '';
+  private  $security_credential;
   private  $consumer_key;
   private  $consumer_secret;
   private  $shortcode;
   private  $pass_key;
   private  $initiator_name;
   private  $initiator_pass;
-  private  $security_credential;
+  private  $callback_url;
+  private  $confirmation_url;
+  private  $validation_url;
+  private  $result_url;
   private  $live_endpoint;
   private  $sandbox_endpoint;
-  private  $confirmation_url;
-  private  $timeout_url;
-  private  $validation_url;
-  private  $callback_url;
-  private  $result_url;
   private  $env;
 
   function __construct()
   {
     $this->config = Config::getInstance();
-    $this->SecurityCredential = $this->security_credential();
     $this->live_endpoint      = 'https://api.safaricom.co.ke/';
     $this->sandbox_endpoint   = 'https://sandbox.safaricom.co.ke/';
   }
@@ -60,31 +56,34 @@ class Mpesa
   {
     switch ($key) {
       case 'consumer_key':
-        $this->consumer_key = $value;
+        $this->consumer_key = trim($value);
         break;
       case 'consumer_secret':
-        $this->consumer_secret = $value;
+        $this->consumer_secret = trim($value);
         break;
       case 'shortcode':
         $this->shortcode = $value;
         break;
+      case 'pt_shortcode':
+        $this->pt_shortcode = $value;
+        break;
       case 'shortcode1':
         $this->shortcode1 = $value;
         break;
-      case 'shortcode2':
-        $this->shortcode2 = $value;
+      case 'b2c_shortcode':
+        $this->b2c_shortcode = $value;
         break;
       case 'initiator_name':
-        $this->initiator_name = $value;
+        $this->initiator_name = trim($value);
         break;
       case 'initiator_pass':
-        $this->initiator_pass = $value;
+        $this->initiator_pass = trim($value);
+        break;
+      case 'pass_key':
+        $this->pass_key = trim($value);
         break;
       case 'security_credential':
         $this->security_credential = $value;
-        break;
-      case 'pass_key':
-        $this->pass_key = $value;
         break;
       case 'env':
         $this->env = $value;
@@ -145,22 +144,80 @@ class Mpesa
    *  Mpesa triggers avalidation request against the validation URL and the 3rd party system responds to mpesa 
    *  with a validation response (eithera success or an error code)
    *
+   *  @param  $status Completed/Cancelled
    *  @return json
    */
-  public function register_url()
+  public function register_url($status = 'Cancelled')
   {
     $url =  $this->env('mpesa/c2b/v1/registerurl');
 
     //Fill in the request parameters with valid values
     $curl_post_data = array(
-      'ShortCode' => $this->shortcode1,
-      'ResponseType' => 'Completed',
+      'ShortCode' => $this->shortcode,
+      'ResponseType' => $status,
       'ConfirmationURL' => $this->confirmation_url,
       'ValidationURL' => $this->validation_url
     );
 
     $this->query($url, $curl_post_data);
   }
+
+  /** C2B simulate transaction for sandbox only
+   * note this is run only in sandbox mode for simulation
+   * @param  int   $Amount | The amount been transacted.
+   * @param  int   $Msisdn | MSISDN (phone number) sending the transaction, start with country code without the plus(+) sign.
+   * @param  string  $BillRefNumber | Bill Reference Number (Optional).
+   * @param  string  $commandId CustomerPayBillOnline or CustomerBuyGoodsOnline
+   * @return null
+   */
+  public function c2b($Amount, $Msisdn, $BillRefNumber = NULL, $commandId = 'CustomerBuyGoodsOnline')
+  {
+    $url =  $this->env('mpesa/c2b/v1/simulate');
+
+    //Fill in the request parameters with valid values        
+    $curl_post_data = array(
+      'ShortCode' => $this->pt_shortcode,
+      'CommandID' => $commandId,
+      'Amount' => $Amount,
+      'Msisdn' => $Msisdn,
+      'BillRefNumber' => $BillRefNumber  // '00000' //optional
+    );
+
+    $this->query($url, $curl_post_data);
+  }
+
+  /** STK Push Simulation lipa na M-pesa Online payment API is used to initiate a M-pesa transaction on behalf of a customer using STK push
+   * This is the same technique mySafaricom app uses whenever the app is used to make payments
+   *  
+   * @param  int  $amount
+   * @param  int  $PartyA | The MSISDN sending the funds.
+   * @param  int  $AccountReference  | (order id) Used with M-Pesa PayBills
+   * @param  string  $TransactionDesc | A description of the transaction.
+   * @param  string  $transactionType 'CustomerPayBillOnline' or CustomerBuyGoodsOnline
+   * @return  null
+   */
+  public function STKPushSimulation($Amount, $phoneNumberSendingFund, $AccountReference, $TransactionDesc, $transactionType = 'CustomerBuyGoodsOnline')
+  {
+    $url =  $this->env('mpesa/stkpush/v1/processrequest');
+
+    //Fill in the request parameters with valid values     
+    $curl_post_data = array(
+      'BusinessShortCode' => $this->shortcode,
+      'Password' => $this->password(),
+      'Timestamp' => $this->timestamp(),
+      'TransactionType' => $transactionType,
+      'Amount' => $Amount,
+      'PhoneNumber' => $phoneNumberSendingFund,
+      'PartyA' => $phoneNumberSendingFund,
+      'PartyB' => $this->pt_shortcode,
+      'CallBackURL' => $this->callback_url,
+      'AccountReference' => $AccountReference,
+      'TransactionDesc' => $TransactionDesc
+    );
+
+    $this->query($url, $curl_post_data);
+  }
+
 
 
   /** STK Push Status Query
@@ -185,60 +242,6 @@ class Mpesa
   }
 
 
-  /** STK Push Simulation lipa na M-pesa Online payment API is used to initiate a M-pesa transaction on behalf of a customer using STK push
-   * This is the same technique mySafaricom app uses whenever the app is used to make payments
-   *  
-   * @param  int     $amount
-   * @param  int     $PartyA | The MSISDN sending the funds.
-   * @param  int     $AccountReference  | (order id) Used with M-Pesa PayBills
-   * @param  string  $TransactionDesc | A description of the transaction.
-   * @return array object
-   */
-  public function STKPushSimulation($Amount, $PartyA, $AccountReference, $TransactionDesc)
-  {
-    $url =  $this->env('mpesa/stkpush/v1/processrequest');
-
-    //Fill in the request parameters with valid values     
-    $curl_post_data = array(
-      'BusinessShortCode' => $this->shortcode,
-      'Password' => $this->password(),
-      'Timestamp' => $this->timestamp(),
-      'TransactionType' => 'CustomerPayBillOnline',
-      'Amount' => $Amount,
-      'PartyA' => $PartyA,
-      'PartyB' => $this->shortcode,
-      'PhoneNumber' => $PartyA,
-      'CallBackURL' => $this->callback_url,
-      'AccountReference' => $AccountReference,
-      'TransactionDesc' => $TransactionDesc
-    );
-
-    $this->query($url, $curl_post_data);
-  }
-
-  /** C2B simulate transaction
-   *
-   * @param  int   $Amount | The amount been transacted.
-   * @param  int   $Msisdn | MSISDN (phone number) sending the transaction, start with country code without the plus(+) sign.
-   * @param  int   $BillRefNumber | Bill Reference Number (Optional).
-   * @return array object
-   */
-  public function c2b($Amount, $Msisdn, $BillRefNumber = NULL)
-  {
-    $url =  $this->env('mpesa/c2b/v1/simulate');
-
-    //Fill in the request parameters with valid values        
-    $curl_post_data = array(
-      'ShortCode'  => $this->shortcode1,
-      'CommandID'  => 'CustomerPayBillOnline',
-      'Amount'     => $Amount,
-      'Msisdn'     => $Msisdn,
-      'BillRefNumber' => $BillRefNumber  // '00000' //optional
-    );
-
-    $this->query($url, $curl_post_data);
-  }
-
   /**  
    * B2C Payment Request transactions betwwen a company and customers 
    * who are the enduser of its products ir services
@@ -249,19 +252,19 @@ class Mpesa
    * @param   string    $receiver  | Phone number receiving the transaction
    * @param   string    $remark    | Comments that are sent along with the transaction.
    * @param   string    $ocassion  | optional
-   * @return  array object
+   * @return  null
    */
-  public function b2c($amount, $commandId, $receiver, $remark, $occassion = null, $timeout_url, $result_url)
+  public function b2c($amount, $commandId, $receiver, $remark,  $result_url, $timeout_url, $occassion = null)
   {
     $url = $this->env('mpesa/b2c/v1/paymentrequest');
 
     //Fill in the request parameters with valid values           
     $curl_post_data = array(
-      'InitiatorName'      => $this->initiator_name,
-      'SecurityCredential' => $this->SecurityCredential,
+      'InitiatorName' => $this->initiator_name,
+      'SecurityCredential' => $this->security_credential(),
       'CommandID' => $commandId,
       'Amount' => $amount,
-      'PartyA' => $this->shortcode1,
+      'PartyA' => $this->b2c_shortcode,
       'PartyB' => $receiver,
       'Remarks' => $remark,
       'QueueTimeOutURL' => $this->timeout_url . $timeout_url,
@@ -284,21 +287,21 @@ class Mpesa
    * @param  int      $RecieverIdentifierType | Type of organization receiving the funds being transacted. 1,2,4
    * @param  string   $AccountReference | Account Reference mandatory for “BusinessPaybill” CommandID.
    * @param  string   $remarks
-   * @return array    object 
+   * @return  null 
    */
-  public function b2b($Amount, $commandId, $PartyB, $RecieverIdentifierType, $SenderIdentifierType, $AccountReference, $Remarks, $timeout_url, $result_url)
+  public function b2b($Amount, $PartyB, $commandId, $AccountReference, $Remarks, $result_url, $timeout_url)
   {
     $url =  $this->env('/mpesa/b2b/v1/paymentrequest');
 
     $curl_post_data = array(
       //Fill in the request parameters with valid values
       'Initiator' => $this->initiator_name,
-      'SecurityCredential' => $this->SecurityCredential,
+      'SecurityCredential' => $this->security_credential(),
       'CommandID' => $commandId,
-      'SenderIdentifierType' => $SenderIdentifierType,
-      'RecieverIdentifierType' => $RecieverIdentifierType,
+      'SenderIdentifierType' => 4,
+      'RecieverIdentifierType' => 4,
       'Amount' => $Amount,
-      'PartyA' => $this->shortcode1,
+      'PartyA' => $this->shortcode,
       'PartyB' => $PartyB,
       'AccountReference' => $AccountReference,
       'Remarks' => $Remarks,
@@ -309,26 +312,24 @@ class Mpesa
     $this->query($url, $curl_post_data);
   }
 
-
-
   /** Account Balance API request for account balance of a shortcode
    * 
    * @access  public
    * @param   int     $PartyA | Type of organization receiving the transaction
    * @param   int     $IdentifierType |Type of organization receiving the transaction
    * @param   string  $Remarks | Comments that are sent along with the transaction.
-   * @return  array object
+   * @return  null
    */
-  public function accountbalance($PartyA, $IdentifierType, $Remarks, $timeout_url, $result_url)
+  public function accountbalance($IdentifierType, $Remarks, $result_url, $timeout_url)
   {
     $url =  $this->env('mpesa/accountbalance/v1/query');
 
     //Fill in the request parameters with valid values
     $curl_post_data = array(
       'Initiator' => $this->initiator_name,
-      'SecurityCredential' => $this->SecurityCredential,
+      'SecurityCredential' => $this->security_credential(),
       'CommandID' => 'AccountBalance',
-      'PartyA' => $PartyA,
+      'PartyA' => $this->shortcode,
       'IdentifierType' => $IdentifierType,
       'Remarks' => $Remarks,
       'QueueTimeOutURL' => $this->timeout_url . $timeout_url,
@@ -338,7 +339,7 @@ class Mpesa
     $this->query($url, $curl_post_data);
   }
 
-  /** reverses a B2B ,B2C ir C2B Mpesa,transaction
+  /** reverses a B2B ,B2C or C2B Mpesa,transaction
    *
    * @access  public
    * @param   int      $amount
@@ -347,21 +348,21 @@ class Mpesa
    * @param   int      $RecieverIdentifierType
    * @param   string   $Remarks
    * @param   string   $Ocassion
-   * @return  string
+   * @return  null
    */
-  public function reversal($Amount, $ReceiverParty, $RecieverIdentifierType, $TransactionID, $Remarks, $Occasion = NULL, $timeout_url, $result_url)
+  public function reversal($Amount, $TransactionID, $Remarks, $result_url, $timeout_url, $Occasion = NULL)
   {
     $url =  $this->env('mpesa/reversal/v1/request');
 
     //Fill in the request parameters with valid values      
     $curl_post_data = array(
       'Initiator' => $this->initiator_name,
-      'SecurityCredential' => $this->SecurityCredential,
+      'SecurityCredential' => $this->security_credential(),
       'CommandID' => 'TransactionReversal',
       'TransactionID' => $TransactionID,
       'Amount' => $Amount,
-      'ReceiverParty' => $ReceiverParty,
-      'RecieverIdentifierType' => $RecieverIdentifierType, //4
+      'ReceiverParty' => $this->shortcode,
+      'RecieverIdentifierType' => 11,
       'ResultURL' => $this->result_url . $result_url,
       'QueueTimeOutURL' => $this->timeout_url . $timeout_url,
       'Remarks' => $Remarks,
@@ -377,23 +378,23 @@ class Mpesa
    * @access  public
    * @param   string  $TransactionID | Organization Receiving the funds.
    * @param   int     $PartyA | Organization/MSISDN sending the transaction
-   * @param   int     $IdentifierType | Type of organization receiving the transaction
+   * @param   int     $IdentifierType | Type of organization receiving the transaction 1 – MSISDN 2 – Till Number 4 – Organization short code
    * @param   string  $Remarks
    * @param   string  $Ocassion
-   * @return array object
+   * @return  null
    */
-  public function transaction_status($TransactionID, $PartyA, $IdentifierType, $Remarks, $Occassion = NULL, $timeout_url, $result_url)
+  public function transaction_status($TransactionID,  $Remarks, $result_url, $timeout_url,$indentifier = 2, $Occassion = NULL)
   {
     $url =  $this->env('mpesa/transactionstatus/v1/query');
 
     //Fill in the request parameters with valid values
     $curl_post_data = array(
       'Initiator' => $this->initiator_name,
-      'SecurityCredential' => $this->SecurityCredential,
+      'SecurityCredential' => $this->security_credential(),
       'CommandID' => 'TransactionStatusQuery',
       'TransactionID' => $TransactionID,
-      'PartyA' => $PartyA,
-      'IdentifierType' => $IdentifierType,
+      'PartyA' => $this->shortcode,
+      'IdentifierType' => $indentifier,
       'ResultURL' => $this->result_url . $result_url,
       'QueueTimeOutURL' => $this->timeout_url . $timeout_url,
       'Remarks' => $Remarks,
@@ -403,18 +404,48 @@ class Mpesa
     $this->query($url, $curl_post_data);
   }
 
+  /**
+   * QR Code Generate
+   * Format of QR output:"1": Image Format."2": QR String Format "3": Binary Data Format."4": PDF Format.
+   * Transaction Type. The supported types are: BG: Pay Merchant (Buy Goods).WA: Withdraw Cash at Agent Till.PB: Paybill or Business number.SM: Send Money(Mobile number).SB: Sent to Business. Business number CPI in MSISDN format.
+   * 	Credit Party Identifier. Can be a Mobile Number, Business Number, Agent Till, Paybill or Business number, Merchant Buy Goods.
+   * 
+   * @param QRFormat Format of QR output "1": Image Format. "2": QR String Format "3": Binary Data Format. "4": PDF Format.
+   * @param TrxCodeBG BG Pay Merchant (Buy Goods).WA: Withdraw Cash at Agent Till. PB: Paybill or Business number.SM: Send Money(Mobile number).SB: Sent to Business. Business number CPI in MSISDN format.
+   * @param Amount  
+   * @return Qrformart
+   */
+  public function generate_qrcode($amount, $reference, $MerchantName = 'SERVICE', $qrformat = 1, $trxcode = 'BG')
+  {
+    $url = $this->env('mpesa/qrcode/v1/generate');
+
+    //Fill in the request parameters 
+    $curl_post_data = array(
+      "QRVersion" => "01",
+      "QRFormat" => $qrformat,
+      "QRType" => "D",
+      "MerchantName" => $MerchantName,
+      "RefNo" => $reference,
+      "Amount" => $amount,
+      "TrxCode" => $trxcode,
+      "CPI" => $this->shortcode
+    );
+
+    $this->query($url, $curl_post_data);
+  }
+
   /** query function
    * 
    * @param  $url
    * @param  $curl_post_data
-   * @return json
+   * @return  null
    */
   public function query($url, $curl_post_data)
   {
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL, $url);
     //setting custom header
-    curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type:application/json', 'Authorization:Bearer ' . $this->oauth_token()));
+    curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type:application/json', 'charset=utf8', 'Authorization:Bearer ' . $this->oauth_token()));
 
     $data_string = json_encode($curl_post_data);
 
@@ -481,10 +512,10 @@ class Mpesa
    */
   public function security_credential()
   {
-    //$publicKey = file_get_contents(__DIR__ . '\cert.cert');
-    //openssl_public_encrypt($this->initiator_pass, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
-   // return if(!is_null($this->security_credential))? $this->security_credential : base64_encode($encrypted);
-     return $this->security_credential;
+
+    $publicKey = file_get_contents(__DIR__ . '/ProductionCertificate.cer');
+    openssl_public_encrypt($this->initiator_pass, $encrypted, $publicKey, OPENSSL_PKCS1_PADDING);
+    return is_null($this->security_credential) ? base64_encode($encrypted) : $this->security_credential;
   }
 
 
@@ -496,7 +527,7 @@ class Mpesa
   public function getResponseData($array = NULL)
   {
     if ($array == TRUE) {
-      return json_decode($this->msg);
+      return $this->msg;
     }
     return json_decode($this->msg);
   }
