@@ -1,5 +1,5 @@
 {
-    "name": "wasksofts/mpesa",
+    "name": "wasksofts-technology/mpesa",
     "type": "library",
     "description": "Mpesa daraja api library",
     "keywords": [
@@ -12,7 +12,7 @@
         "customer to business",
         "bussines to bussines"
     ],
-    "homepage": "https://github.com/wasksofts/wasksofts/mpesa",
+    "homepage": "https://github.com/wasksofts-technology/mpesa",
     "license": "MIT",
     "authors": [
         {
@@ -31,7 +31,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "v1.1-dev"
+            "dev-master": "v4.0.0-dev"
         }
     },
     "minimum-stability": "stable"
