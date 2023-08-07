@@ -4,7 +4,7 @@ This package seeks to help php developers implement the various Mpesa APIs witho
 
 #  Installation using composer
 ``` bash
-$ composer require wasksofts/mpesa
+$ composer require wasksofts-technology/mpesa
 ```
 
 #  Usage example
