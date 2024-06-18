@@ -8,8 +8,6 @@ class Config
     private $settings;
     private $updated = FALSE;
 
-    private final function __construct() {}
-
     public static function getInstance()
     {
         if (self::$instance == NULL) {
@@ -30,8 +28,6 @@ class Config
 
     public function set($name, $value)
     {
-        //update only if different from what
-        //we already have
         if (
             !isset($this->settings[$name]) or ($this->settings[$name] != $value)
         ) {
@@ -40,4 +36,3 @@ class Config
         }
     }
 }
-
