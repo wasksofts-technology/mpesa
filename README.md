@@ -15,10 +15,11 @@ composer require wasksofts-technology/mpesa
   for laravel and other framework they have no problem
      <?php
      require_once('vendor/autoload.php');
-     
      use Wasksofts\Mpesa\Mpesa;
-
-    $mpesa  = new Mpesa();
+     $mpesa  = new Mpesa();
+     or
+     $mpesa  = new Wasksofts\MpesaMpesa();
+    
     $mpesa->config('consumer_key', '');
     $mpesa->config('consumer_secret', '');
     $mpesa->config('pass_key', '');
