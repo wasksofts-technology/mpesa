@@ -3,14 +3,16 @@
     "type": "library",
     "description": "Mpesa daraja api library",
     "keywords": [
-        "codeigniter mpesa library",
+        "Laravel, codeigniter Mpesa library",
         "gateway",
         "mpesa",
         "paybill",
         "lipa na mpesa",
         "reverse money",
         "customer to business",
-        "bussines to bussines"
+        "bussines to bussines",
+        "kra tax remittance",
+        "Bill mnager"
     ],
     "homepage": "https://github.com/wasksofts-technology/mpesa",
     "license": "MIT",
