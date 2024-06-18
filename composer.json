@@ -3,7 +3,7 @@
     "type": "library",
     "description": "Mpesa daraja api library",
     "keywords": [
-        "Laravel, codeigniter Mpesa library",
+        "Laravel Codeigniter Mpesa library",
         "gateway",
         "mpesa",
         "paybill",
