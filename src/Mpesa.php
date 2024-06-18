@@ -437,6 +437,36 @@ class Mpesa
     $this->query($url, $curl_post_data);
   }
 
+  /**
+   * QR Code Generate
+   * This API enables businesses to remit tax to Kenya Revenue Authority (KRA). To use this API,
+   * prior integration is required with KRA for tax declaration,
+   * payment registration number (PRN) generation, and exchange of other tax-related information.
+   * 
+   * @return  null
+   */
+  public function tax_remittance($amount, $account, $result_url, $timeout_url, $Remarks = "OK", $kra_paybill = "572572")
+  {
+    $url = $this->env('mpesa/b2b/v1/remittax');
+    $curl_post_data = array(
+      "Initiator" => $this->initiator_name,
+      "SecurityCredential" => $this->security_credential(),
+      "CommandID" => "PayTaxToKRA",
+      "SenderIdentifierType" => "4",
+      "RecieverIdentifierType" => "4",
+      "Amount" => $amount,
+      "PartyA" => $this->store_number,
+      "PartyB" => $kra_paybill,
+      "AccountReference" => $account,
+      "Remarks" => $Remarks,
+      'ResultURL' => $this->result_url . $result_url,
+      'QueueTimeOutURL' => $this->timeout_url . $timeout_url,
+    );
+
+
+    $this->query($url, $curl_post_data);
+  }
+
   /** query function
    * 
    * @param  $url
