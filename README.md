@@ -45,7 +45,14 @@ composer require wasksofts-technology/mpesa
     $mpesa->accountbalance('600443','4','remarks','acc_timeout','acc_result');
     $mpesa->reversal('2','254708374149','1','NCR7S1UXBT','PAY NOW VIA WASKSOFT');
     $mpesa->transaction_status('NCR7S1UXBT','254708374149','4','apitest');
-    
+
+#  Usage example for billing
+     <?php
+     require_once('vendor/autoload.php');
+     
+     use Wasksofts\Mpesa\BillManager;
+
+
  # get responses
     echo $mpesa->getResponseData();
     
