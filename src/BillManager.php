@@ -222,20 +222,20 @@ class BillManager
      * 
      */
 
-    public function update_invoice_data()
+    public function update_invoice_data($payment_date, $paidAmmount, $actReference, $transactionId, $phoneNumber, $fullName, $invoiceName, $reference)
     {
         $url =  $this->env('v1/billmanager-invoice/change-invoice');
 
         //Fill in the request parameters 
         $curl_post_data = array(
-            "paymentDate" => "2021-10-01",
-            "paidAmount" => "800",
-            "accountReference" => "Balboa95s",
-            "transactionId" => "PL141KEBZS",
-            "phoneNumber" => "0722000000",
-            "fullName" => "John Doe",
-            "invoiceName" => "Parking Fee",
-            "externalReference" => "955"
+            "paymentDate" => $payment_date,
+            "paidAmount" => $paidAmmount,
+            "accountReference" => $actReference,
+            "transactionId" => $transactionId,
+            "phoneNumber" => $phoneNumber,
+            "fullName" => $fullName,
+            "invoiceName" => $invoiceName,
+            "externalReference" => $reference
         );
 
         $this->query($url, $curl_post_data);
