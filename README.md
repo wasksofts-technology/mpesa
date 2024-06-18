@@ -4,7 +4,7 @@ This package seeks to help php developers implement the various Mpesa APIs witho
 
 #  Installation using composer
 ``` bash
-$ composer require wasksofts-technology/mpesa
+composer require wasksofts-technology/mpesa
 ```
 
 #  Usage example
@@ -22,15 +22,15 @@ $ composer require wasksofts-technology/mpesa
     $mpesa->config('consumer_key', '');
     $mpesa->config('consumer_secret', '');
     $mpesa->config('pass_key', '');
-    $mpesa->config('initiator_name', '');
-    $mpesa->config('initiator_pass', '');
-    $mpesa->config('shortcode', '174379');
-    $mpesa->config('shortcode1', '');
-    $mpesa->config('shortcode2', '');
-    $mpesa->config('security_credential','');
+    $mpesa->config('store_number', '174379');
+    $mpesa->config('business_shortcode', '');
     $mpesa->config('callback_url', 'https://example.com/callback_url/');
     $mpesa->config('confirmation_url', 'https://example.com/confirmation_url/');
     $mpesa->config('validation_url', 'https://example.com/validation_url/');
+    $mpesa->config('initiator_name', '');
+    $mpesa->config('initiator_pass', '');
+    $mpesa->config('b2c_shortcode', '');
+    $mpesa->config('security_credential','');
     $mpesa->config('result_url', 'https://example.com/result_url/'); 
     $mpesa->config('timeout_url', 'https://example.com/timeout_url/');
     $mpesa->config('env', 'sandbox');
@@ -39,7 +39,7 @@ $ composer require wasksofts-technology/mpesa
     $mpesa->STKPushQuery('ws_CO_DMZ_297481201_09042019174418021');
     $mpesa->STKPushSimulation('1','254708374149','pay now','test');
     $mpesa->register_url(); 
-    $mpesa->c2b('1000', '254708374149', 'account');
+    $mpesa->c2b_simulation('1000', '254708374149', 'account');
     $mpesa->b2c('200', 'BusinessPayment', '254708374149', 'payment','b2c_timeout','b2c_result'); // last two parameter define callback https://example.com/result_url.php/b2c_timeout/ or https://example.com/result_url/b2c_result/
     $mpesa->b2b('10000','BusinessPayBill','60000','4','4','paytest','cool','b2b_timeout','b2b_result');
     $mpesa->accountbalance('600443','4','remarks','acc_timeout','acc_result');
