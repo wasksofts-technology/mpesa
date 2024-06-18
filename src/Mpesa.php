@@ -438,7 +438,7 @@ class Mpesa
   }
 
   /**
-   * QR Code Generate
+   * Tax remittance
    * This API enables businesses to remit tax to Kenya Revenue Authority (KRA). To use this API,
    * prior integration is required with KRA for tax declaration,
    * payment registration number (PRN) generation, and exchange of other tax-related information.
