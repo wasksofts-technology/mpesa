@@ -51,7 +51,20 @@ composer require wasksofts-technology/mpesa
      require_once('vendor/autoload.php');
      
      use Wasksofts\Mpesa\BillManager;
+     $bill_manager  = new BillManager(); 
 
+     or
+     
+     $bill_manager  = new Wasksofts\Mpesa\BillManager(); 
+     
+     $bill_manager->optin_biller('examaple@demo.com');
+     $bill_manager->optin_update('examaple@demo.com');
+     $bill_manager->single_invoice($reference, $billedfullname, $billedphoneNumber, $billedperiod, $invoiceName, $dueDate,            $accountRef, $amount);
+     $bill_manager->bulk_invoicing($array);
+     $bill_manager->reconciliation($payment_date, $paidAmmount, $actReference, $transactionId, $phoneNumber, $fullName,               $invoiceName, $reference);
+     $bill_manager->update_invoice_data($payment_date, $paidAmmount, $actReference, $transactionId, $phoneNumber, $fullName,          $invoiceName, $reference);
+     $bill_manager->cancel_single_invoice($reference);
+     $bill_manager->cancel_bulk_invoice($array);
 
  # get responses
     echo $mpesa->getResponseData();
