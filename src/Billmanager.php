@@ -2,8 +2,6 @@
 
 namespace Wasksofts\Mpesa\BillManager;
 
-use Wasksofts\Mpesa\Config;
-
 date_default_timezone_set("Africa/Nairobi");
 
 /**------------------------------------------------------------------------------------------------------------------------
@@ -20,7 +18,7 @@ date_default_timezone_set("Africa/Nairobi");
 | *-------------------------------------------------------------------------------------------------------------------------
  */
 
-class Billmanager
+class BillManager
 {
     private  $msg = '';
     private  $consumer_key;
@@ -29,10 +27,12 @@ class Billmanager
     private  $official_contact;
     private  $logo;
     private  $callback_url;
+    private  $live_endpoint;
+    private  $sandbox_endpoint;
+    private  $env;
 
-    function __construct()
+    public function __construct()
     {
-        $this->config = Config::getInstance();
         $this->live_endpoint      = 'https://api.safaricom.co.ke/';
         $this->sandbox_endpoint   = 'https://sandbox.safaricom.co.ke/';
     }
@@ -64,6 +64,9 @@ class Billmanager
                 break;
             case 'callback_url':
                 $this->callback_url = $value;
+                break;
+            case 'env':
+                $this->env = $value;
                 break;
             default:
                 echo 'Invalid config key :' . $key;
