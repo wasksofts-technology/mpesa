@@ -18,7 +18,9 @@ composer require wasksofts-technology/mpesa
     require_once('vendor/autoload.php');
     use Wasksofts\Mpesa\Mpesa;
     $mpesa  = new Mpesa();
+    
      or
+     
     $mpesa  = new Wasksofts\MpesaMpesa();
     
     $mpesa->config('consumer_key', '');
