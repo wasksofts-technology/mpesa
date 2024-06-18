@@ -2,8 +2,6 @@
 
 namespace Wasksofts\Mpesa;
 
-use Wasksofts\Mpesa\Config;
-
 date_default_timezone_set("Africa/Nairobi");
 
 /**----------------------------------------------------------------------------------------
@@ -43,7 +41,7 @@ class Mpesa
 
   function __construct()
   {
-    $this->config = Config::getInstance();
+    //$this->config = Config::getInstance();
     $this->live_endpoint      = 'https://api.safaricom.co.ke/';
     $this->sandbox_endpoint   = 'https://sandbox.safaricom.co.ke/';
   }
@@ -65,10 +63,10 @@ class Mpesa
       case 'consumer_secret':
         $this->consumer_secret = trim($value);
         break;
-      case 'shortcode':
+      case 'store_number':
         $this->store_number = $value;
         break;
-      case 'pt_shortcode':
+      case 'business_shortcode':
         $this->business_shortcode = $value;
         break;
       case 'b2c_shortcode':
