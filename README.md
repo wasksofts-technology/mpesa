@@ -13,12 +13,13 @@ composer require wasksofts-technology/mpesa
   use the above statement if it procedural app else if its codeigniter 3.x go config enable $config['composer_autoload'] = 'vendor/autoload.php'; 
   if vendor is root folder if vendor file are on application it should be $config['composer_autoload'] = true ,
   for laravel and other framework they have no problem
-     <?php
-     require_once('vendor/autoload.php');
-     use Wasksofts\Mpesa\Mpesa;
-     $mpesa  = new Mpesa();
+    
+    <?php
+    require_once('vendor/autoload.php');
+    use Wasksofts\Mpesa\Mpesa;
+    $mpesa  = new Mpesa();
      or
-     $mpesa  = new Wasksofts\MpesaMpesa();
+    $mpesa  = new Wasksofts\MpesaMpesa();
     
     $mpesa->config('consumer_key', '');
     $mpesa->config('consumer_secret', '');
