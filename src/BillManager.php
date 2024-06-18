@@ -1,6 +1,6 @@
 <?php
 
-namespace Wasksofts\Mpesa\BillManager;
+namespace Wasksofts\Mpesa;
 
 date_default_timezone_set("Africa/Nairobi");
 
