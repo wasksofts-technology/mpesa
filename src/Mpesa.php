@@ -152,9 +152,6 @@ class Mpesa
    */
   public function register_url($status = 'Cancelled')
   {
-    $url =  $this->env('mpesa/c2b/v1/registerurl');
-
-    //Fill in the request parameters with valid values
     $curl_post_data = array(
       'ShortCode' => $this->store_number,
       'ResponseType' => $status,
@@ -162,6 +159,7 @@ class Mpesa
       'ValidationURL' => $this->validation_url
     );
 
+    $url =  $this->env('mpesa/c2b/v1/registerurl');
     $this->query($url, $curl_post_data);
   }
 
@@ -175,7 +173,6 @@ class Mpesa
    */
   public function c2b_simulation($Amount, $Msisdn, $BillRefNumber = NULL, $commandId = 'CustomerBuyGoodsOnline')
   {
-    $url =  $this->env('mpesa/c2b/v1/simulate');
 
     //Fill in the request parameters with valid values        
     $curl_post_data = array(
@@ -186,6 +183,7 @@ class Mpesa
       'BillRefNumber' => $BillRefNumber  // '00000' //optional
     );
 
+    $url =  $this->env('mpesa/c2b/v1/simulate');
     $this->query($url, $curl_post_data);
   }
 
@@ -201,7 +199,6 @@ class Mpesa
    */
   public function STKPushSimulation($Amount, $phoneNumberSendingFund, $AccountReference, $TransactionDesc, $transactionType = 'CustomerBuyGoodsOnline')
   {
-    $url =  $this->env('mpesa/stkpush/v1/processrequest');
 
     //Fill in the request parameters with valid values     
     $curl_post_data = array(
@@ -218,6 +215,7 @@ class Mpesa
       'TransactionDesc' => $TransactionDesc
     );
 
+    $url =  $this->env('mpesa/stkpush/v1/processrequest');
     $this->query($url, $curl_post_data);
   }
 
@@ -231,7 +229,6 @@ class Mpesa
    */
   public function STKPushQuery($checkoutRequestID)
   {
-    $url =  $this->env('mpesa/stkpushquery/v1/query');
 
     //Fill in the request parameters with valid values        
     $curl_post_data = array(
@@ -241,6 +238,7 @@ class Mpesa
       'CheckoutRequestID' => $checkoutRequestID
     );
 
+    $url =  $this->env('mpesa/stkpushquery/v1/query');
     $this->query($url, $curl_post_data);
   }
 
@@ -259,9 +257,6 @@ class Mpesa
    */
   public function b2c($amount, $commandId, $receiver, $remark,  $result_url, $timeout_url, $occassion = null)
   {
-    $url = $this->env('mpesa/b2c/v1/paymentrequest');
-
-    //Fill in the request parameters with valid values           
     $curl_post_data = array(
       'InitiatorName' => $this->initiator_name,
       'SecurityCredential' => $this->security_credential(),
@@ -275,6 +270,7 @@ class Mpesa
       'Occasion' => $occassion
     );
 
+    $url = $this->env('mpesa/b2c/v1/paymentrequest');
     $this->query($url, $curl_post_data);
   }
 
@@ -294,10 +290,8 @@ class Mpesa
    */
   public function b2b($Amount, $PartyB, $commandId, $AccountReference, $Remarks, $result_url, $timeout_url)
   {
-    $url =  $this->env('/mpesa/b2b/v1/paymentrequest');
 
     $curl_post_data = array(
-      //Fill in the request parameters with valid values
       'Initiator' => $this->initiator_name,
       'SecurityCredential' => $this->security_credential(),
       'CommandID' => $commandId,
@@ -312,6 +306,7 @@ class Mpesa
       'ResultURL' => $this->result_url . $result_url
     );
 
+    $url =  $this->env('/mpesa/b2b/v1/paymentrequest');
     $this->query($url, $curl_post_data);
   }
 
@@ -325,7 +320,6 @@ class Mpesa
    */
   public function accountbalance($IdentifierType, $Remarks, $result_url, $timeout_url)
   {
-    $url =  $this->env('mpesa/accountbalance/v1/query');
 
     //Fill in the request parameters with valid values
     $curl_post_data = array(
@@ -339,6 +333,7 @@ class Mpesa
       'ResultURL' => $this->result_url . $result_url
     );
 
+    $url =  $this->env('mpesa/accountbalance/v1/query');
     $this->query($url, $curl_post_data);
   }
 
@@ -355,9 +350,6 @@ class Mpesa
    */
   public function reversal($Amount, $TransactionID, $Remarks, $result_url, $timeout_url, $Occasion = NULL)
   {
-    $url =  $this->env('mpesa/reversal/v1/request');
-
-    //Fill in the request parameters with valid values      
     $curl_post_data = array(
       'Initiator' => $this->initiator_name,
       'SecurityCredential' => $this->security_credential(),
@@ -372,6 +364,7 @@ class Mpesa
       'Occasion' => $Occasion
     );
 
+    $url =  $this->env('mpesa/reversal/v1/request');
     $this->query($url, $curl_post_data);
   }
 
@@ -388,9 +381,6 @@ class Mpesa
    */
   public function transaction_status($TransactionID,  $Remarks, $result_url, $timeout_url, $indentifier = 2, $Occassion = NULL)
   {
-    $url =  $this->env('mpesa/transactionstatus/v1/query');
-
-    //Fill in the request parameters with valid values
     $curl_post_data = array(
       'Initiator' => $this->initiator_name,
       'SecurityCredential' => $this->security_credential(),
@@ -404,6 +394,7 @@ class Mpesa
       'Occasion' => $Occassion
     );
 
+    $url =  $this->env('mpesa/transactionstatus/v1/query');
     $this->query($url, $curl_post_data);
   }
 
@@ -420,9 +411,6 @@ class Mpesa
    */
   public function generate_qrcode($amount, $reference, $MerchantName = 'SERVICE', $qrformat = 1, $trxcode = 'BG')
   {
-    $url = $this->env('mpesa/qrcode/v1/generate');
-
-    //Fill in the request parameters 
     $curl_post_data = array(
       "QRVersion" => "01",
       "QRFormat" => $qrformat,
@@ -434,6 +422,7 @@ class Mpesa
       "CPI" => $this->store_number
     );
 
+    $url = $this->env('mpesa/qrcode/v1/generate');
     $this->query($url, $curl_post_data);
   }
 
@@ -447,7 +436,6 @@ class Mpesa
    */
   public function tax_remittance($amount, $account, $result_url, $timeout_url, $Remarks = "OK", $kra_paybill = "572572")
   {
-    $url = $this->env('mpesa/b2b/v1/remittax');
     $curl_post_data = array(
       "Initiator" => $this->initiator_name,
       "SecurityCredential" => $this->security_credential(),
@@ -463,7 +451,7 @@ class Mpesa
       'QueueTimeOutURL' => $this->timeout_url . $timeout_url,
     );
 
-
+    $url = $this->env('mpesa/b2b/v1/remittax');
     $this->query($url, $curl_post_data);
   }
 
@@ -478,12 +466,9 @@ class Mpesa
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL, $url);
     curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type:application/json', 'charset=utf8', 'Authorization:Bearer ' . $this->oauth_token()));
-
-    $data_string = json_encode($curl_post_data);
-
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($curl, CURLOPT_POST, true);
-    curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($curl_post_data));
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
 
     $curl_response = curl_exec($curl);
@@ -519,9 +504,9 @@ class Mpesa
    */
   public function password()
   {
-    $Merchant_id =  trim($this->store_number);
-    $passkey     =  trim($this->pass_key);
-    $password    =  base64_encode($Merchant_id . $passkey . $this->timestamp());
+    $Merchant_id = trim($this->store_number);
+    $passkey =  trim($this->pass_key);
+    $password =  base64_encode($Merchant_id . $passkey . $this->timestamp());
 
     return $password;
   }
