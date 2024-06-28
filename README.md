@@ -14,7 +14,7 @@ composer require wasksofts-technology/mpesa
   if vendor is root folder if vendor file are on application it should be $config['composer_autoload'] = true ,
   for laravel and other framework they have no problem
   
-  ```php
+    ```php
     <?php
     require_once('vendor/autoload.php');
     use Wasksofts\Mpesa\Mpesa;
