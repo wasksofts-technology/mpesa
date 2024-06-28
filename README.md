@@ -14,63 +14,63 @@ composer require wasksofts-technology/mpesa
   if vendor is root folder if vendor file are on application it should be $config['composer_autoload'] = true ,
   for laravel and other framework they have no problem
   
-    ```php
-    <?php
-    require_once('vendor/autoload.php');
-    use Wasksofts\Mpesa\Mpesa;
-    $mpesa  = new Mpesa();
+  ```php
+  <?php
+  require_once('vendor/autoload.php');
+  use Wasksofts\Mpesa\Mpesa;
+  $mpesa  = new Mpesa();
     
      or
      
-    $mpesa  = new Wasksofts\MpesaMpesa();
+  $mpesa  = new Wasksofts\MpesaMpesa();
     
-    $mpesa->config('consumer_key', '');
-    $mpesa->config('consumer_secret', '');
-    $mpesa->config('pass_key', '');
-    $mpesa->config('store_number', '174379');
-    $mpesa->config('business_shortcode', '');
-    $mpesa->config('callback_url', 'https://example.com/callback_url/');
-    $mpesa->config('confirmation_url', 'https://example.com/confirmation_url/');
-    $mpesa->config('validation_url', 'https://example.com/validation_url/');
-    $mpesa->config('initiator_name', '');
-    $mpesa->config('initiator_pass', '');
-    $mpesa->config('b2c_shortcode', '');
-    $mpesa->config('security_credential','');
-    $mpesa->config('result_url', 'https://example.com/result_url/'); 
-    $mpesa->config('timeout_url', 'https://example.com/timeout_url/');
-    $mpesa->config('env', 'sandbox');
+  $mpesa->config('consumer_key', '');
+  $mpesa->config('consumer_secret', '');
+  $mpesa->config('pass_key', '');
+  $mpesa->config('store_number', '174379');
+  $mpesa->config('business_shortcode', '');
+  $mpesa->config('callback_url', 'https://example.com/callback_url/');
+  $mpesa->config('confirmation_url', 'https://example.com/confirmation_url/');
+  $mpesa->config('validation_url', 'https://example.com/validation_url/');
+  $mpesa->config('initiator_name', '');
+  $mpesa->config('initiator_pass', '');
+  $mpesa->config('b2c_shortcode', '');
+  $mpesa->config('security_credential','');
+  $mpesa->config('result_url', 'https://example.com/result_url/'); 
+  $mpesa->config('timeout_url', 'https://example.com/timeout_url/');
+  $mpesa->config('env', 'sandbox');
     
-    echo " Token : " . $mpesa->oauth_token();
-    $mpesa->STKPushQuery('ws_CO_DMZ_297481201_09042019174418021');
-    $mpesa->STKPushSimulation('1','254708374149','pay now','test');
-    $mpesa->register_url(); 
-    $mpesa->c2b_simulation('1000', '254708374149', 'account');
-    $mpesa->b2c('200', 'BusinessPayment', '254708374149', 'payment','b2c_timeout','b2c_result'); // last two parameter define callback https://example.com/result_url.php/b2c_timeout/ or https://example.com/result_url/b2c_result/
-    $mpesa->b2b('10000','BusinessPayBill','60000','4','4','paytest','cool','b2b_timeout','b2b_result');
-    $mpesa->tax_remittance('1000', 'kraaccoutn', 'tax_remit_timeout_url','tax_remit_result_url');
-    $mpesa->accountbalance('600443','4','remarks','acc_timeout','acc_result');
-    $mpesa->reversal('2','254708374149','1','NCR7S1UXBT','PAY NOW VIA WASKSOFT');
-    $mpesa->transaction_status('NCR7S1UXBT','254708374149','4','apitest');
+  echo " Token : " . $mpesa->oauth_token();
+  $mpesa->STKPushQuery('ws_CO_DMZ_297481201_09042019174418021');
+  $mpesa->STKPushSimulation('1','254708374149','pay now','test');
+  $mpesa->register_url(); 
+  $mpesa->c2b_simulation('1000', '254708374149', 'account');
+  $mpesa->b2c('200', 'BusinessPayment', '254708374149', 'payment','b2c_timeout','b2c_result'); // last two parameter define callback https://example.com/result_url.php/b2c_timeout/ or https://example.com/result_url/b2c_result/
+  $mpesa->b2b('10000','BusinessPayBill','60000','4','4','paytest','cool','b2b_timeout','b2b_result');
+  $mpesa->tax_remittance('1000', 'kraaccoutn', 'tax_remit_timeout_url','tax_remit_result_url');
+  $mpesa->accountbalance('600443','4','remarks','acc_timeout','acc_result');
+  $mpesa->reversal('2','254708374149','1','NCR7S1UXBT','PAY NOW VIA WASKSOFT');
+  $mpesa->transaction_status('NCR7S1UXBT','254708374149','4','apitest');
 
 #  Usage example for billing
-     <?php
-     require_once('vendor/autoload.php');
+  <?php
+  require_once('vendor/autoload.php');
      
-     use Wasksofts\Mpesa\BillManager;
-     $bill_manager  = new BillManager(); 
+  use Wasksofts\Mpesa\BillManager;
+  $bill_manager  = new BillManager(); 
 
      or
      
-     $bill_manager  = new Wasksofts\Mpesa\BillManager(); 
+  $bill_manager  = new Wasksofts\Mpesa\BillManager(); 
      
-     $bill_manager->optin_biller('examaple@demo.com');
-     $bill_manager->optin_update('examaple@demo.com');
-     $bill_manager->single_invoice($reference, $billedfullname, $billedphoneNumber, $billedperiod, $invoiceName, $dueDate,            $accountRef, $amount);
-     $bill_manager->bulk_invoicing($array);
-     $bill_manager->reconciliation($payment_date, $paidAmmount, $actReference, $transactionId, $phoneNumber, $fullName,               $invoiceName, $reference);
-     $bill_manager->update_invoice_data($payment_date, $paidAmmount, $actReference, $transactionId, $phoneNumber, $fullName,          $invoiceName, $reference);
-     $bill_manager->cancel_single_invoice($reference);
-     $bill_manager->cancel_bulk_invoice($array);
+  $bill_manager->optin_biller('examaple@demo.com');
+  $bill_manager->optin_update('examaple@demo.com');
+  $bill_manager->single_invoice($reference, $billedfullname, $billedphoneNumber, $billedperiod, $invoiceName, $dueDate,            $accountRef, $amount);
+  $bill_manager->bulk_invoicing($array);
+  $bill_manager->reconciliation($payment_date, $paidAmmount, $actReference, $transactionId, $phoneNumber, $fullName,               $invoiceName, $reference);
+  $bill_manager->update_invoice_data($payment_date, $paidAmmount, $actReference, $transactionId, $phoneNumber, $fullName,          $invoiceName, $reference);
+  $bill_manager->cancel_single_invoice($reference);
+  $bill_manager->cancel_bulk_invoice($array);
 
  # get responses
     echo $mpesa->getResponseData();
